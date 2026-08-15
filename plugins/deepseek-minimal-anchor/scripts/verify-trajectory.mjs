@@ -7,10 +7,10 @@
  *   - number of visible assistant replies (anchored mode: ~1, the final summary)
  *   - the shape of the final summary (changed / verified / risks)
  *   - tool-call count and pace
- * If the transcript happens to contain plain reasoning text (a third-party
- * Responses gateway that passes DeepSeek reasoning_content through), the
- * let-me / we fingerprint is reported too - opportunistically, never as a
- * hard requirement.
+ * If the transcript happens to contain plain reasoning text (responses
+ * `reasoning` items with `reasoning_text` / `summary_text` content, which the
+ * DeepSeek provider surfaces), the let-me / we fingerprint and block counts
+ * are reported too - opportunistically, never as a hard requirement.
  *
  * Usage: node verify-trajectory.mjs <transcript.jsonl>
  */
@@ -51,6 +51,29 @@ export function analyzeTranscript(file) {
     try { parsed = JSON.parse(line) } catch { continue }
     const payload = parsed.payload ?? parsed.data ?? parsed
     const content = payload?.content
+    const reasoningTexts = []
+    if (payload?.type === 'reasoning' && Array.isArray(payload.content)) {
+      for (const block of payload.content) {
+        if ((block?.type === 'reasoning_text' || block?.type === 'summary_text') && typeof block?.text === 'string') {
+          reasoningTexts.push(block.text)
+        }
+      }
+    }
+    if (Array.isArray(payload?.summary)) {
+      for (const block of payload.summary) {
+        if ((block?.type === 'summary_text' || block?.type === 'reasoning_text') && typeof block?.text === 'string') {
+          reasoningTexts.push(block.text)
+        }
+      }
+    }
+    if (reasoningTexts.length > 0) {
+      stats.reasoningTextAvailable = true
+      stats.reasoningBlocks += reasoningTexts.length
+      for (const text of reasoningTexts) {
+        stats.letMe += count(/let me/gi, text)
+        stats.we += count(/\bwe\b/gi, text)
+      }
+    }
     if (Array.isArray(content)) {
       for (const block of content) {
         const type = block?.type ?? ''
@@ -62,7 +85,7 @@ export function analyzeTranscript(file) {
             stats.letMe += count(/let me/gi, blockText)
             stats.we += count(/\bwe\b/gi, blockText)
           }
-        } else if (type === 'text' && blockText.trim() !== '') {
+        } else if ((type === 'text' || type === 'output_text') && blockText.trim() !== '') {
           stats.visibleReplies += 1
           stats.letMe += count(/let me/gi, blockText)
           stats.we += count(/\bwe\b/gi, blockText)

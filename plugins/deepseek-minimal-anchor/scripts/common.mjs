@@ -191,12 +191,22 @@ export function maintenanceFor(complex) {
 // Overrides / gating / emission
 // ---------------------------------------------------------------------------
 
-/** Read an override text file beside the plugin (anchor.txt etc.). */
+/**
+ * Read an override text file (anchor.txt etc.). When
+ * DEEPSEEK_MINIMAL_ANCHOR_OVERRIDE_DIR is set, that directory is searched
+ * first - used by the A/B runner to swap persona variants without editing the
+ * installed plugin. Falls back to the plugin root, then the built-in default.
+ */
 export function overrideText(name, fallback) {
-  const file = join(PLUGIN_ROOT, name)
-  if (!existsSync(file)) return fallback
-  const text = readFileSync(file, 'utf8').trim()
-  return text === '' ? fallback : text
+  const dir = process.env.DEEPSEEK_MINIMAL_ANCHOR_OVERRIDE_DIR
+  const candidates = dir ? [join(dir, name), join(PLUGIN_ROOT, name)] : [join(PLUGIN_ROOT, name)]
+  for (const file of candidates) {
+    if (existsSync(file)) {
+      const text = readFileSync(file, 'utf8').trim()
+      if (text !== '') return text
+    }
+  }
+  return fallback
 }
 
 /**

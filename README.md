@@ -65,6 +65,10 @@ npm test          # node --test tests/v2/（路由分类、模式锁定、钩子
   （与 harness 侧历史结果一致，属模型难点）。本子集全部被路由进 react 侧，spec 侧
   尚未在 Codex 里得到难基准验证。n=2/臂，Flash 侧结论已复现；Pro 臂与 spec 侧仍需
   更多数据。
+- **Flash persona 变体筛选（2026-08-16）**：v1 复现优先 5/6、v2 规格转代码 4/6、
+  v3 防绕圈 3/6，均未超过 v0 五锚（10/12）——加料措辞反而有害；正式 flash persona
+  维持 v0。思考链内容可在会话 transcript 中读取（reasoning_text），质量分析见
+  实验台 analyze-thinking.mjs。
 
 ## 授权
 

@@ -100,3 +100,20 @@ test('mode state: lock, read, report', () => {
   assert.equal(getModeState('unit-test-missing'), null)
   assert.equal(modeForReport('unit-test-missing'), null)
 })
+
+test('overrideText: env override dir takes precedence', async () => {
+  const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const { join } = await import('node:path')
+  const dir = mkdtempSync(join(tmpdir(), 'dsh-variant-'))
+  try {
+    writeFileSync(join(dir, 'flash.txt'), 'VARIANT FLASH TEXT')
+    const prev = process.env.DEEPSEEK_MINIMAL_ANCHOR_OVERRIDE_DIR
+    process.env.DEEPSEEK_MINIMAL_ANCHOR_OVERRIDE_DIR = dir
+    assert.equal(personaFor('flash'), 'VARIANT FLASH TEXT')
+    if (prev === undefined) delete process.env.DEEPSEEK_MINIMAL_ANCHOR_OVERRIDE_DIR
+    else process.env.DEEPSEEK_MINIMAL_ANCHOR_OVERRIDE_DIR = prev
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
