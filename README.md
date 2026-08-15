@@ -59,12 +59,12 @@ npm test          # node --test tests/v2/（路由分类、模式锁定、钩子
   | Flash 基线（无插件） | 4/6 |
   | Flash 路由（flash persona 五锚） | 5/6 |
 
-  解读：强制 spec 锚定在实现类任务上有真实拖累（736 从 pass 变 fail）；v2 路由与基线
-  持平（避免损伤）；**对 Flash 出现第一次正向增益**——736 从基线 fail 变成路由 pass，
-  Flash 路由（5/6）追平 Pro（5/6），支持“Flash 需要单独 weak persona 五锚”的社区
-  结论。150 在所有臂全挂（与 harness 侧历史结果一致，属模型难点）。本子集全部被路由
-  进 react 侧，spec 侧尚未在 Codex 里得到难基准验证。n=1/臂，方向性结论可靠、数值
-  （尤其 736 翻转）需 n=2 复跑确认。
+  解读：强制 spec 锚定在实现类任务上有真实拖累（736 从 pass 变 fail）；v2 路由对 Pro
+  持平基线（避免损伤）；**对 Flash 的正向增益经 n=2 复跑确认**——736 基线 fail×2、
+  路由 pass×2，Flash 路由两轮均 5/6、追平 Pro，Flash 基线两轮均 4/6。150 在所有臂全挂
+  （与 harness 侧历史结果一致，属模型难点）。本子集全部被路由进 react 侧，spec 侧
+  尚未在 Codex 里得到难基准验证。n=2/臂，Flash 侧结论已复现；Pro 臂与 spec 侧仍需
+  更多数据。
 
 ## 授权
 
