@@ -68,6 +68,21 @@ yourself), answer from the audit trail, not from assumptions:
 
 Keep the answer short: on/off, mode, and the one next action if off.
 
+## Proactive notice
+
+Because hook trust is manual, a user can have the plugin installed with the
+router silently off. On DeepSeek-model sessions, check the audit log once at
+the start of meaningful work (not on trivial chit-chat):
+
+- If `hook-log.jsonl` has no entry for this session and no entry within the
+  last few minutes for a DeepSeek session, briefly tell the user the
+  mini-router is NOT active and give the two-step fix: trust the hooks
+  (app plugin settings, or `/hooks` in the CLI), then start a new thread.
+- Do not repeat the notice in the same session once the user has acknowledged
+  it, has disabled the plugin (`DEEPSEEK_MINIMAL_ANCHOR=never`), or the log
+  shows this session's injections.
+- One or two sentences max; lead with the actionable fact, not a wall of text.
+
 ## Verification
 
 Codex hides chain-of-thought, so verification uses VISIBLE behavior:

@@ -1,6 +1,6 @@
 {
   "name": "deepseek-minimal-anchor",
-  "version": "0.2.0",
+  "version": "0.2.0+codex.20260815155130",
   "description": "Task-aware mini-router for DeepSeek models in Codex: classifies spec/react mode, injects the matching persona at session start, adapts per-turn guidance to task complexity, and reports a trajectory fingerprint.",
   "author": {
     "name": "Hzz"
@@ -24,7 +24,8 @@
     "capabilities": [],
     "defaultPrompt": [
       "Work in DeepSeek mini-router mode.",
-      "Show the trajectory fingerprint for this session."
+      "Show the trajectory fingerprint for this session.",
+      "Enable the DeepSeek mini-router (trust its hooks) and confirm it is active."
     ]
   }
 }
