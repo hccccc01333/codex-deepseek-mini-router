@@ -58,9 +58,11 @@ do not flip mid-session:
 
 - The audit trail lives in `~/.codex/deepseek-minimal-anchor-reports/`
   (`hook-log.jsonl`, `session-modes.json`).
-- The CLI channel injects this same contract as developer context via hooks
-  (stronger). On the desktop app the hook channel may be inactive in current
-  builds; this skill is then the active channel - follow the contract anyway.
+- Hooks inject this same contract as developer context on desktop and CLI once
+  trusted (stronger). Trust is hash-keyed: after a plugin update, re-trust the
+  current hook definition, then start a new thread.
+- If a session has no hook entries (hooks not trusted yet, or a build without
+  hook support), this skill is the active channel - follow the contract anyway.
 - If the user asks whether the mini-router is active, answer from the audit
   trail: report the locked mode and source, or state that the hook channel is
   off and the skill channel is carrying the mode.
