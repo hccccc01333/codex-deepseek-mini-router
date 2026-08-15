@@ -1,6 +1,6 @@
 ---
 name: deepseek-minimal-anchor
-description: Work in the DeepSeek mini-router mode inside Codex. Use when the active model is DeepSeek (deepseek-v4-pro or deepseek-v4-flash), when the user asks for minimal mode, less chatter, the anchored working contract, task-aware reasoning modes, or when you need to verify whether the anchor engaged.
+description: DeepSeek mini-router working contract. When the active model is a DeepSeek model (deepseek-v4-pro or deepseek-v4-flash), READ this skill and follow its working contract automatically before the first tool call. Also use when the user asks for minimal mode, less chatter, the anchored working contract, task-aware reasoning modes, or to verify whether the anchor engaged.
 ---
 
 # DeepSeek Mini-Router (working contract)
