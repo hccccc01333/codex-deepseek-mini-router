@@ -36,6 +36,9 @@ weak persona（w7）加 分类/回顾/反跑题/深度思考/决策闭环 五个
 
 ## 安装与启用
 
+> ⚠️ **首次安装必须手动信任钩子**：Codex 的安全机制不允许插件自动信任自己的钩子。
+> 未信任时只有技能会加载、注入不会执行，所以“装好了”不等于“生效了”。
+
 1. 在 Codex 应用/CLI 安装插件（个人市场 **DeepSeek Mini-Router**，原名 minimal-anchor）。
    从仓库安装（开源场景）：
 
@@ -46,10 +49,19 @@ weak persona（w7）加 分类/回顾/反跑题/深度思考/决策闭环 五个
    ```
 
 2. 首次运行会要求审查并信任钩子。
+   桌面应用：插件设置里审查并信任（或按首次弹窗提示）；CLI：交互模式输入 `/hooks`。
 3. 使用 DeepSeek 模型（slug 含 `deepseek` 自动生效）。
 
 依赖：本机需有 Node.js（钩子用 `node` 执行）；Codex 官方支持 DeepSeek 的
 Responses 接入配置。
+
+## 怎么知道开没开
+
+新会话里直接问：“DeepSeek mini-router 生效了吗？”模型会读审计日志
+（`~/.codex/deepseek-minimal-anchor-reports/hook-log.jsonl` 和
+`session-modes.json`）回答：开了（模式 spec/react/flash + 来源）、还是没开
+（钩子未信任 → 去插件设置信任，然后开新线程）。也可以自己看日志最后几行：
+有新会话的 `SessionStart` 记录就是开了；没有就是钩子被跳过。
 
 环境变量：
 

@@ -45,6 +45,28 @@ The mode is locked per session and never flipped mid-session.
 - Customize text by creating `anchor.txt` / `react.txt` / `flash.txt` /
   `maintenance.txt` / `deep.txt` next to the plugin root (they override the
   built-in defaults).
+- **Hook trust is a Codex security mechanism the plugin cannot bypass or set
+  itself.** Installing or enabling the plugin does not trust its hooks; until
+  the user reviews and trusts them (app plugin settings, or `/hooks` in the
+  CLI), the skill below still loads but NO context is injected.
+
+## Is the router actually on?
+
+When a user asks whether the mini-router is active (or you need to verify it
+yourself), answer from the audit trail, not from assumptions:
+
+- Read `~/.codex/deepseek-minimal-anchor-reports/hook-log.jsonl` and
+  `~/.codex/deepseek-minimal-anchor-reports/session-modes.json`.
+- If the current session id (or a recent DeepSeek session) appears with
+  `SessionStart` / `UserPromptSubmit` entries: report the locked mode and
+  source (`spec` / `react` / `flash`, from env / model / classifier).
+- If there is no matching entry: hooks are not trusted or not running. Tell
+  the user to trust the hooks (app plugin settings, or `/hooks` in the CLI),
+  then start a NEW thread - this thread cannot be retro-fitted.
+- If the plugin is disabled by `DEEPSEEK_MINIMAL_ANCHOR=never`, say so and
+  explain the env var.
+
+Keep the answer short: on/off, mode, and the one next action if off.
 
 ## Verification
 
@@ -69,3 +91,6 @@ Codex hides chain-of-thought, so verification uses VISIBLE behavior:
   re-measurement.
 - The transcript wire format is not a stable hook API, so reports are
   best-effort.
+- Hook trust is manual by design; a plugin that silently trusted itself would
+  defeat Codex's hook review. The audit log is the source of truth for whether
+  the anchor actually delivered.
