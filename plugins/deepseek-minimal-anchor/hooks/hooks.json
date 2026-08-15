@@ -1,0 +1,43 @@
+{
+  "description": "DeepSeek mini-router: task-aware spec/react/flash persona at session start, complexity-adaptive per-turn guidance, and best-effort trajectory report.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/scripts/anchor-session.mjs\"",
+            "timeout": 10,
+            "additionalContextLimit": 3000,
+            "statusMessage": "DeepSeek mini-router"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/scripts/maintain-mode.mjs\"",
+            "timeout": 10,
+            "additionalContextLimit": 2500,
+            "statusMessage": "DeepSeek mode guidance"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/scripts/report-trajectory.mjs\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}

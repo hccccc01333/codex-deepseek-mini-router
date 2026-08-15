@@ -1,0 +1,30 @@
+{
+  "name": "deepseek-minimal-anchor",
+  "version": "0.2.0",
+  "description": "Task-aware mini-router for DeepSeek models in Codex: classifies spec/react mode, injects the matching persona at session start, adapts per-turn guidance to task complexity, and reports a trajectory fingerprint.",
+  "author": {
+    "name": "Hzz"
+  },
+  "license": "MIT",
+  "keywords": [
+    "deepseek",
+    "minimal",
+    "anchor",
+    "router",
+    "prompt",
+    "trajectory"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "DeepSeek Minimal Anchor",
+    "shortDescription": "Give DeepSeek Pro a task-aware spec/react mini-router in Codex.",
+    "longDescription": "DeepSeek models are highly sensitive to the agent scaffold and to the first-visible persona. This plugin classifies each task (spec: plan-and-fix, react: build-and-verify), locks the mode per session, injects the matching persona as developer context at session start, and adapts per-turn guidance to task complexity. DeepSeek Flash models get a separate weak-mode persona with recall/anti-runaway/decision-closure anchors. The plugin cannot replace Codex's system prompt or tool catalog, and Codex hides reasoning, so verification uses visible behavior: reply count, final-summary shape, tool-call pace, an audit log of every injection, and opportunistic let-me/we counts when a gateway passes reasoning through.",
+    "developerName": "Hzz",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "Work in DeepSeek mini-router mode.",
+      "Show the trajectory fingerprint for this session."
+    ]
+  }
+}

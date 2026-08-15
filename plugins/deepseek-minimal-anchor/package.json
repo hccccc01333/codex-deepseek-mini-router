@@ -1,0 +1,8 @@
+{
+  "name": "deepseek-minimal-anchor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/v2/test-router.mjs tests/v2/test-hooks.mjs"
+  }
+}
