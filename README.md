@@ -83,3 +83,23 @@ npm test          # node --test tests/v2/（路由分类、模式锁定、钩子
 
 MIT（LICENSE）。设计与人设文本参考 dsh-router-standard、dsh-anchored-standard 与
 modeltest（均 MIT，详见 NOTICE.md）。社区产物，与 DeepSeek、OpenAI 无隶属关系。
+
+## 效果证明（实测数据 + 可视化）
+
+所有数字来自本机 Codex + 官方 DeepSeek API 的实测，BigCodeBench v0.1.4
+（6 任务子集）本地评分；完整方法、逐题矩阵和诚实边界见
+[docs/evidence.md](docs/evidence.md)，可复现脚本在 [bench/](bench/README.md)。
+
+![Pass rate by arm](docs/pass-rate-by-arm.png)
+
+![Per-task pass-rate heatmap](docs/per-task-heatmap.png)
+
+![Reasoning-style metrics by persona variant](docs/thinking-metrics.png)
+
+核心数字：
+
+- Flash 基线（无插件）8/12 → Flash 路由（v0 五锚）10/12 → Flash 路由
+  （v4 decide & verify，正式 persona）16/18；Pro 路由与基线持平（5/6），
+  强制 spec 静态锚定反而掉到 4/6。
+- 7 个 persona 变体筛选后，v4（决策+验证）是唯一超过 v0 的变体；措辞换题不换分
+  （“I need 比 let me 好”实测不成立）。
