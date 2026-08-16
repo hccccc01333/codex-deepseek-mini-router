@@ -1,5 +1,5 @@
 {
-  "description": "DeepSeek mini-router: task-aware spec/react/flash persona at session start, complexity-adaptive per-turn guidance, re-anchor after compaction, and best-effort trajectory report.",
+  "description": "DeepSeek mini-router: task-aware spec/react/flash persona at session start (including compact re-anchor), complexity-adaptive per-turn guidance, and best-effort trajectory report.",
   "hooks": {
     "SessionStart": [
       {
@@ -24,34 +24,6 @@
             "timeout": 10,
             "additionalContextLimit": 2500,
             "statusMessage": "DeepSeek mode guidance"
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "matcher": "manual|auto",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${PLUGIN_ROOT}/scripts/re-anchor.mjs\"",
-            "timeout": 10,
-            "additionalContextLimit": 1500,
-            "statusMessage": "DeepSeek re-anchor (pre-compact)"
-          }
-        ]
-      }
-    ],
-    "PostCompact": [
-      {
-        "matcher": "manual|auto",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${PLUGIN_ROOT}/scripts/re-anchor.mjs\"",
-            "timeout": 10,
-            "additionalContextLimit": 3000,
-            "statusMessage": "DeepSeek re-anchor (post-compact)"
           }
         ]
       }
