@@ -8,7 +8,7 @@ Directory。本文档是提交前的一次性核对清单和素材包，随仓�
 | 项目 | 状态 |
 | --- | --- |
 | 公开仓库 | ✅ `hccccc01333/codex-deepseek-mini-router` |
-| 根插件清单 `.codex-plugin/plugin.json` | ✅ 0.2.0 |
+| 根插件清单 `.codex-plugin/plugin.json` | ✅ 0.3.0 |
 | 图标 `assets/icon.svg` | ✅ SVG，512×512 |
 | 截图 | ✅ `docs/pass-rate-by-arm.png` 等三张 |
 | `LICENSE`（MIT） | ✅ 仓库根 + 插件目录 |
@@ -97,12 +97,12 @@ Directory。本文档是提交前的一次性核对清单和素材包，随仓�
 
 ```powershell
 $src = "D:\deepseek-mini-router\plugins\deepseek-minimal-anchor"
-Compress-Archive -Path "$src\*" -DestinationPath "$env:TEMP\deepseek-mini-router-0.2.0.zip"
+Compress-Archive -Path "$src\*" -DestinationPath "$env:TEMP\deepseek-mini-router-0.3.0.zip"
 ```
 
 ZIP 根目录必须包含：
 
-- `.codex-plugin/plugin.json`（0.2.0，displayName = DeepSeek Mini-Router）
+- `.codex-plugin/plugin.json`（0.3.0，displayName = DeepSeek Mini-Router）
 - `skills/minimal-anchor/SKILL.md`（至少一个技能）
 - `hooks/hooks.json` + `scripts/`（钩子通道）
 - `assets/icon.svg`、`assets/screenshot.png`

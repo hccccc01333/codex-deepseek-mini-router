@@ -1,6 +1,6 @@
 {
   "name": "deepseek-minimal-anchor",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Task-aware spec/react/flash working-contract plugin for DeepSeek models in Codex: classifies each task, locks a mode per session, injects the matching persona via trusted hooks, and audits every injection.",
   "homepage": "https://github.com/hccccc01333/codex-deepseek-mini-router",
   "repository": "https://github.com/hccccc01333/codex-deepseek-mini-router",

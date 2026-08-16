@@ -7,8 +7,8 @@
  * It follows the dsh-router-standard finding that persona is the dominant
  * trigger and that mode selection must come from outside the model.
  *
- * Hooks receive one JSON object on stdin and may print JSON on stdout. Only
- * SessionStart / UserPromptSubmit events consume
+ * Hooks receive one JSON object on stdin and may print JSON on stdout.
+ * SessionStart / UserPromptSubmit / PreCompact / PostCompact events consume
  * `hookSpecificOutput.additionalContext`; SessionEnd is advisory.
  */
 

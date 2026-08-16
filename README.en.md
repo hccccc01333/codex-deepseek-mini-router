@@ -53,7 +53,9 @@ The mode is locked per session and never flipped mid-session. Per-turn guidance
 adapts to task complexity (decision-closure deep anchor for complex tasks).
 Delivery is dual-channel: hooks are the main channel (desktop + CLI) and inject
 the contract as developer context; the bundled skill is the fallback and tells
-you which channel is active. Every injection is written to the audit log.
+you which channel is active. After context compaction the contract is
+re-anchored automatically so the persona does not degrade mid-session. Every
+injection is written to the audit log.
 
 ## What "v4" means (naming, once and for all)
 

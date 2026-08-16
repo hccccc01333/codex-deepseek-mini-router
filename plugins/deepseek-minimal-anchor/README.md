@@ -87,10 +87,11 @@ Responses 接入配置。
 
 ```
 .codex-plugin/plugin.json     插件清单（0.2.0）
-hooks/hooks.json              三个生命周期钩子（SessionStart / UserPromptSubmit / SessionEnd）
+hooks/hooks.json              五个生命周期钩子（SessionStart / UserPromptSubmit / PreCompact / PostCompact / SessionEnd）
 scripts/common.mjs            路由核心：分类、模式锁定、persona、维护引导、审计
 scripts/anchor-session.mjs    SessionStart：锁定模式并注入 persona（或中性契约）
 scripts/maintain-mode.mjs     UserPromptSubmit：首轮 persona，之后按复杂度给引导
+scripts/re-anchor.mjs         PreCompact/PostCompact：压缩前保留契约、压缩后重新锚定 persona
 scripts/report-trajectory.mjs SessionEnd：轨迹指纹报告（含模式）
 scripts/verify-trajectory.mjs 独立验证工具
 skills/minimal-anchor/        技能文档

@@ -71,3 +71,47 @@ test('maintain: flash model gets flash persona', () => {
   })
   assert.ok(context(out).includes('flash mode'))
 })
+
+function compactPayload(eventName, sessionId, model = 'deepseek-v4-pro') {
+  return { hook_event_name: eventName, session_id: sessionId, model }
+}
+
+test('PreCompact asks the summary to preserve the locked contract', () => {
+  const sid = `fn-precompact-${Date.now()}`
+  runHook('anchor-session.mjs', {
+    session_id: sid,
+    model: 'deepseek-v4-pro',
+    message: 'Fix the bug in shipping.js and run the tests',
+  })
+  const out = runHook('re-anchor.mjs', compactPayload('PreCompact', sid))
+  assert.ok(context(out).toLowerCase().includes('preserve'))
+  assert.ok(context(out).includes('spec'))
+})
+
+test('PostCompact re-injects the persona for the locked mode', () => {
+  const sid = `fn-postcompact-${Date.now()}`
+  runHook('anchor-session.mjs', {
+    session_id: sid,
+    model: 'deepseek-v4-pro',
+    message: 'Fix the bug in shipping.js and run the tests',
+  })
+  const out = runHook('re-anchor.mjs', compactPayload('PostCompact', sid))
+  assert.ok(context(out).includes('spec mode'))
+})
+
+test('PostCompact re-anchors the flash persona for flash sessions', () => {
+  const sid = `fn-postcompact-flash-${Date.now()}`
+  runHook('anchor-session.mjs', {
+    session_id: sid,
+    model: 'deepseek-v4-flash',
+    message: 'whatever',
+  })
+  const out = runHook('re-anchor.mjs', compactPayload('PostCompact', sid, 'deepseek-v4-flash'))
+  assert.ok(context(out).includes('flash mode'))
+})
+
+test('PostCompact with no locked mode injects the neutral contract', () => {
+  const out = runHook('re-anchor.mjs', compactPayload('PostCompact', `fn-postcompact-neutral-${Date.now()}`))
+  assert.ok(context(out).includes('Working contract'))
+  assert.ok(!context(out).includes('spec mode'))
+})
