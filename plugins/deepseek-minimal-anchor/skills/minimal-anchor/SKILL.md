@@ -22,8 +22,10 @@ do not flip mid-session:
 - `react` - build / create / implement tasks (`build`, `create`, `implement`,
   `write`, `generate`, `simulate`, `新建`, `开发`, `生成`, `仿真`...): produce
   the working result directly, then verify it.
-- `flash` - always for `deepseek-v4-flash`: use the weak-mode contract below
-  regardless of task type.
+- `flash` - always for `deepseek-v4-flash`: decide & verify mode - decide the
+  task type (build or fix) in one step, keep reasoning concise, end each
+  reasoning block with a decision or an information need, run a concrete check
+  after writing code, and retry once on failure (no environment checks).
 - Tie or unclear: default to `spec`.
 
 ## Working contract
@@ -32,12 +34,11 @@ do not flip mid-session:
   when the work is finished or you genuinely need input.
 - `spec`: read and reproduce before changing; plan the smallest change.
 - `react`: build the result first, verify second.
-- `flash`: decide the task type (build or fix) before acting; briefly review
-  what is already done and what is missing; do NOT run environment checks
-  (`echo`, `whoami`, `uname`, `pwd`) or re-confirm the environment; think
-  deeply about architecture, edge cases, and integration points; produce when
-  your information is complete and end each reasoning block with a decision or
-  an information need.
+- `flash`: decide the task type (build or fix) in one step and act; keep
+  reasoning concise and end each reasoning block with a decision or an
+  information need; after writing code run a concrete check; if it fails, read
+  the complete error, fix the cause, and retry once - do not loop or re-confirm
+  the environment (`echo`, `whoami`, `uname`, `pwd`).
 - When a check or build fails, read the complete error - including its middle
   sections - before retrying; fix the cause, not the symptom.
 - Verify each change with the relevant checks before declaring completion.
