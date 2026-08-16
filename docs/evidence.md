@@ -39,23 +39,29 @@ generations are separate: v1 = static minimal anchor, v2 = mini-router
 
 ![Reasoning-style metrics by persona variant](thinking-metrics.png)
 
-## Pro "strict reviewer" pilot (2026-08-16, negative result)
+## Pro pilots in Codex (2026-08-16, negative results)
 
-A Pro variant (`bench/variants/pro-verify`) adapted from the Anthropic
-math-olympiad self-verify loop ("switch to a strict reviewer, fix gaps, verify
-again, say so honestly if a gap remains") was tested on 3 BigCodeBench tasks
-(150, 736, 874), one run per arm:
+Three Pro conditions were tested on 3 BigCodeBench tasks (150, 736, 874),
+one run per cell:
 
 | Arm | Tasks passed | Reasoning on task 150 |
 | --- | --- | --- |
 | Pro baseline (no plugin) | 2/3 | 4 blocks / 2153 chars / let-me 5 |
-| Pro router + pro-verify | 2/3 | 14 blocks / 8210 chars / let-me 28 |
+| Pro router + pro-verify (strict reviewer clause) | 2/3 | 14 blocks / 8210 chars / let-me 28 |
+| Pro router + minimal (official one-sentence anchor) | 1/3 | 5 blocks / 2304 chars / let-me 6 |
 
-The same task (736) failed in both arms. The clause did not reproduce a gain
-in Codex on this coding subset; it roughly quadrupled reasoning length and
-let-me narration without changing outcomes. This is not a math-task test - the
-clause may behave differently on pure math problems, but we do not claim it
-transfers to coding tasks.
+Task 736 failed in every arm; the minimal arm also failed 150, which passed in
+the other two. The strict-reviewer clause quadrupled reasoning length without
+changing outcomes; the one-sentence Minimal anchor did not flip the reasoning
+trajectory either (fingerprint stays standard-like). Neither Pro treatment
+reproduced the community Project2 Minimal gain in Codex on this coding subset.
+
+Likely reason: the harness Minimal condition is a combination of the one-line
+system prompt **and** a two-tool catalog with no injected context. Codex hooks
+can inject the one line but cannot shrink the tool catalog or strip Codex's
+own scaffold, so the trajectory lever is missing. These are coding tasks, not
+math; a pure-math set may behave differently, but we do not claim Pro gains
+transfer to Codex coding work.
 
 ## Methodology
 
