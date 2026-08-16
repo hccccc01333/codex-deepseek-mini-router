@@ -9,9 +9,10 @@ persona，再按任务复杂度给每轮引导，并把每次注入写进审计�
 社区实验链（xiaobright/modeltest → dsh-anchored-standard → yjh051108/dsh-router-standard）
 发现 DeepSeek 模型对首轮可见的 persona 高度敏感，且行为不是连续变化，而是塌缩成几个
 稳定带：spec（计划-集体，修/维护任务的高分带）、mixed（陷阱，应回避）、react（执行者，
-新建/构建任务的高分带）。persona 是主导触发器；Flash 模型是阈值式行为，需要单独的
-weak persona（w7）加 分类/回顾/反跑题/深度思考/决策闭环 五个锚。模式选择必须来自外部
-（模型不能自路由），这正是本插件做的事。
+新建/构建任务的高分带）。persona 是主导触发器；Flash 模型是阈值式行为，需要单独的弱
+persona：社区 w7 五锚（分类/回顾/反跑题/深度思考/决策闭环）是第一代（本仓库筛选编号
+v0），当前出厂的是 v4「decide & verify」。模式选择必须来自外部（模型不能自路由），
+这正是本插件做的事。
 
 **诚实边界**：插件只能注入 developer 上下文，改不了 Codex 的系统提示和工具目录；
 注入的是「模式」，不是「去除过拟合」。措辞是轨迹指纹，不是能力证明；router-standard
@@ -25,7 +26,7 @@ weak persona（w7）加 分类/回顾/反跑题/深度思考/决策闭环 五个
 | --- | --- | --- |
 | spec | Pro + 维护/修复/计划类任务（默认） | 先读文件、复现失败、计划最小改动，再动手 |
 | react | Pro + 新建/构建/跑代码类任务 | 直接产出可运行结果，再用检查验证 |
-| flash | 模型 slug 含 flash | w7 weak 五锚：分类 + 回顾 + 反跑题 + 深度思考 + 决策闭环 |
+| flash | 模型 slug 含 flash | v4 decide & verify：一步定类型；每个推理块以决策或信息需求收尾；写后跑具体检查；失败重试一次 |
 
 任务分类器按关键词计分（spec 词 vs react 词），平局默认 spec；消息超过 800 字符或含
 架构关键词（architecture / module / 集成 / 分布式 等）时，每轮引导追加「决策闭环」深
@@ -33,6 +34,10 @@ weak persona（w7）加 分类/回顾/反跑题/深度思考/决策闭环 五个
 
 模式在会话内锁定（`session-modes.json`），避免中途翻转；SessionStart 没有首条消息时
 先注入中性契约，第一条 UserPromptSubmit 再升级为分类后的 persona。
+
+> 命名说明：v1/v2 是插件代际（静态锚定 → 迷你路由）；v0–v6 是 Flash persona 的筛选
+> 编号，与插件版本无关。v4 是当前默认的 Flash 契约，详细对照见仓库 README「v4 到底是
+> 什么」一节。
 
 ## 安装与启用
 

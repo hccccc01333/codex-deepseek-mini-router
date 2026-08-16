@@ -5,6 +5,11 @@ comes from runs on this machine (Codex CLI/desktop + official
 `api.deepseek.com`, `wire_api = "responses"`), scored with BigCodeBench v0.1.4
 (complete subset) executed locally.
 
+**Naming**: v0-v6 are internal screening labels for the Flash persona, not
+plugin versions. v4 = "decide & verify", the shipped default. Plugin
+generations are separate: v1 = static minimal anchor, v2 = mini-router
+(current).
+
 ## Claims that are supported
 
 1. **The Flash persona measurably changes outcomes.** On a 6-task BigCodeBench
