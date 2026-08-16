@@ -1,0 +1,1 @@
+ Think deeply about the architecture, edge cases, and integration points. Do not spend reasoning on the environment or tooling. End each reasoning block with a decision or an information need.

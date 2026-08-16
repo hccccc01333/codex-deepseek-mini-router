@@ -1,0 +1,32 @@
+{
+  "date": "2026-08-16 18:17",
+  "eval": {
+    "BigCodeBench/150": [
+      {
+        "task_id": "BigCodeBench/150",
+        "solution": "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\n\ndef task_func(product_dict, product_keys):\n    \"\"\"\n    Create a profit report for a list of products based on a specific product\n    dictionary that includes the quantity and price of each product, calculate\n    the average price and profit for the considered products, and plot a bar\n    chart of the profit for each product.\n\n    Parameters:\n    - product_dict (dict): Product name mapped to a [quantity, price] pair.\n    - product_keys (list): Product keys to include in the report.\n\n    Returns:\n    - tuple: (DataFrame report, matplotlib Axes of the profit bar chart).\n      The Axes is None when there are no products to report.\n    \"\"\"\n    columns = [\"Product\", \"Quantity\", \"Price\", \"Profit\",\n               \"Average Price\", \"Average Profit\"]\n\n    if not product_keys:\n        return pd.DataFrame(columns=columns), None\n\n    records = []\n    for key in product_keys:\n        quantity, price = product_dict[key]\n        records.append({\n            \"Product\": key,\n            \"Quantity\": quantity,\n            \"Price\": price,\n            \"Profit\": quantity * price,\n        })\n\n    report = pd.DataFrame(records, columns=columns[:4])\n    report[\"Average Price\"] = np.mean(report[\"Price\"])\n    report[\"Average Profit\"] = np.mean(report[\"Profit\"])\n\n    fig, ax = plt.subplots()\n    ax.bar(report[\"Product\"], report[\"Profit\"])\n    ax.set_xlabel(\"Product\")\n    ax.set_ylabel(\"Profit\")\n    ax.set_title(\"Profit by Product\")\n\n    return report, ax\n",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/736": [
+      {
+        "task_id": "BigCodeBench/736",
+        "solution": "import numpy as np\nfrom scipy import stats\n\n\ndef task_func(L):\n    \"\"\"\n    Calculate the mode of all elements in a nested list 'L'.\n\n    Parameters:\n    L (list): The nested list.\n\n    Returns:\n    - mode (int): The mode.\n    \"\"\"\n    flattened = np.array(L).flatten()\n    mode_result = stats.mode(flattened)\n    return int(np.asarray(mode_result[0]).ravel()[0])\n",
+        "status": "fail",
+        "details": {
+          "test_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 28, in test_2\n  File \"__test__.py\", line 15, in task_func\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.\n",
+          "test_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 33, in test_3\n  File \"__test__.py\", line 15, in task_func\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.\n"
+        }
+      }
+    ],
+    "BigCodeBench/874": [
+      {
+        "task_id": "BigCodeBench/874",
+        "solution": "from itertools import zip_longest\nfrom scipy.spatial import distance\n\n\ndef task_func(points):\n    \"\"\"\n    Calculate the Euclidean distances between consecutive points in a provided\n    list of 2D coordinates.\n\n    This function takes a list of tuples, where each tuple contains two numbers\n    representing a point in 2D space. It computes the Euclidean distance between\n    each consecutive pair of points.\n\n    If an empty list or a single point is passed, the function returns an empty\n    list. If a tuple contains just one number it is assumed that both coordinates\n    are equal to this number. Example: (2) == (2, 2)\n    \"\"\"\n    # A bare number is treated as a point whose coordinates are both that number.\n    normalized = [\n        (point, point) if isinstance(point, (int, float)) else tuple(point)\n        for point in points\n    ]\n\n    return [\n        distance.euclidean(first, second)\n        for first, second in zip_longest(normalized, normalized[1:])\n        if second is not None\n    ]\n",
+        "status": "pass",
+        "details": {}
+      }
+    ]
+  }
+}

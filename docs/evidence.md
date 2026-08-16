@@ -39,6 +39,24 @@ generations are separate: v1 = static minimal anchor, v2 = mini-router
 
 ![Reasoning-style metrics by persona variant](thinking-metrics.png)
 
+## Pro "strict reviewer" pilot (2026-08-16, negative result)
+
+A Pro variant (`bench/variants/pro-verify`) adapted from the Anthropic
+math-olympiad self-verify loop ("switch to a strict reviewer, fix gaps, verify
+again, say so honestly if a gap remains") was tested on 3 BigCodeBench tasks
+(150, 736, 874), one run per arm:
+
+| Arm | Tasks passed | Reasoning on task 150 |
+| --- | --- | --- |
+| Pro baseline (no plugin) | 2/3 | 4 blocks / 2153 chars / let-me 5 |
+| Pro router + pro-verify | 2/3 | 14 blocks / 8210 chars / let-me 28 |
+
+The same task (736) failed in both arms. The clause did not reproduce a gain
+in Codex on this coding subset; it roughly quadrupled reasoning length and
+let-me narration without changing outcomes. This is not a math-task test - the
+clause may behave differently on pure math problems, but we do not claim it
+transfers to coding tasks.
+
 ## Methodology
 
 - Benchmark: BigCodeBench v0.1.4, `complete` subset, 6 tasks

@@ -1,2 +1,4 @@
 node_modules/
 *.log
+bench/runs-bcb-codex/
+bench/samples-*.jsonl

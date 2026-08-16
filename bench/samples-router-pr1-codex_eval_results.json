@@ -1,0 +1,32 @@
+{
+  "date": "2026-08-16 18:18",
+  "eval": {
+    "BigCodeBench/150": [
+      {
+        "task_id": "BigCodeBench/150",
+        "solution": "import pandas as pd\nimport numpy as np\n\n\ndef task_func(product_dict, product_keys):\n    \"\"\"Create a profit report for the requested products and plot their profits.\"\"\"\n    columns = ['Product', 'Quantity', 'Price', 'Profit']\n    data = []\n\n    for key in product_keys:\n        quantity, price = product_dict[key]\n        profit = quantity * price\n        data.append([key, quantity, price, profit])\n\n    df = pd.DataFrame(data, columns=columns)\n\n    if not df.empty:\n        avg_price = np.mean(df['Price'])\n        avg_profit = np.mean(df['Profit'])\n\n        df['Average Price'] = avg_price\n        df['Average Profit'] = avg_profit\n\n        ax = df.plot(\n            x='Product',\n            y='Profit',\n            kind='bar',\n            legend=False,\n            title=\"Profit for each product\",\n        )\n        ax.set_ylabel(\"Profit\")\n    else:\n        ax = None\n\n    return df, ax\n",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/736": [
+      {
+        "task_id": "BigCodeBench/736",
+        "solution": "import numpy as np\nfrom scipy import stats\n\n\ndef task_func(L):\n    \"\"\"\n    Calculate the mode of all elements in a nested list 'L'.\n\n    Parameters:\n    L (list): The nested list.\n\n    Returns:\n    - mode (int): The mode.\n    \"\"\"\n    flattened = np.array(L)\n    result = stats.mode(flattened, axis=None)\n    return int(result.mode)\n",
+        "status": "fail",
+        "details": {
+          "test_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 28, in test_2\n  File \"__test__.py\", line 15, in task_func\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.\n",
+          "test_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 33, in test_3\n  File \"__test__.py\", line 15, in task_func\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.\n"
+        }
+      }
+    ],
+    "BigCodeBench/874": [
+      {
+        "task_id": "BigCodeBench/874",
+        "solution": "from itertools import zip_longest\n\nfrom scipy.spatial import distance\n\n\ndef _normalize_point(point):\n    \"\"\"Return a 2D coordinate for a point-like input.\n\n    A bare number (such as ``4``) and a single-element tuple (such as\n    ``(4,)``) both mean that the x and y coordinates are equal to that\n    number.\n    \"\"\"\n    if isinstance(point, tuple):\n        if len(point) == 1:\n            return (point[0], point[0])\n        return point\n    return (point, point)\n\n\ndef task_func(points):\n    \"\"\"Calculate Euclidean distances between consecutive 2D points.\"\"\"\n    if len(points) < 2:\n        return []\n\n    normalized = [_normalize_point(point) for point in points]\n    return [\n        float(distance.euclidean(first, second))\n        for first, second in zip_longest(normalized, normalized[1:])\n        if second is not None\n    ]\n",
+        "status": "pass",
+        "details": {}
+      }
+    ]
+  }
+}

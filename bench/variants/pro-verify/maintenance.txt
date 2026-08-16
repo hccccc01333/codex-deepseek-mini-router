@@ -1,0 +1,1 @@
+Continue the established working contract: verify through tool calls, keep narration internal, read full errors before retrying, and finish with a short changed / verified / risks summary. Before declaring completion, review the result as a strict reviewer, fix any gap, and verify again; if a gap cannot be closed, say so honestly.

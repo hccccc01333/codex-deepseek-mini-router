@@ -1,0 +1,14 @@
+{
+  "per_task": {
+    "BigCodeBench/150": [
+      "pass"
+    ],
+    "BigCodeBench/736": [
+      "fail"
+    ],
+    "BigCodeBench/874": [
+      "pass"
+    ]
+  },
+  "pass_count": 2
+}
