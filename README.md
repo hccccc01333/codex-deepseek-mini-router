@@ -110,3 +110,6 @@ npm test            # 14 个单测 + 钩子测试
 dsh-router-standard、dsh-anchored-standard、modeltest（详见
 [NOTICE.md](plugins/deepseek-minimal-anchor/NOTICE.md)）。社区项目，
 与 DeepSeek、OpenAI 无隶属关系。
+
+官方 Plugins Directory 提交素材与自检清单：
+[docs/publish-checklist.md](docs/publish-checklist.md)。

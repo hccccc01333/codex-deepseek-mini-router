@@ -117,6 +117,9 @@ npm test            # 14 unit + hook tests
 Benchmark reproduction: see [bench/README.md](bench/README.md).
 Charts: `python bench/make-charts.py`.
 
+Official Plugins Directory submission pack and self-check checklist:
+[docs/publish-checklist.md](docs/publish-checklist.md).
+
 ## License
 
 MIT ([LICENSE](LICENSE)). Design and persona wording reference

@@ -18,7 +18,7 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "DeepSeek Minimal Anchor",
+    "displayName": "DeepSeek Mini-Router",
     "shortDescription": "Give DeepSeek Pro a task-aware spec/react mini-router in Codex.",
     "composerIcon": "./assets/icon.svg",
     "logo": "./assets/icon.svg",
