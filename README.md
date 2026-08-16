@@ -1,94 +1,52 @@
 # DeepSeek Mini-Router (Codex plugin)
 
-给 Codex 里的 DeepSeek 模型（deepseek-v4-pro / deepseek-v4-flash）注入「任务感知
-思维模式」的本地插件。安装 id 为 `deepseek-minimal-anchor`（继承 v1 名字，避免破坏
-已有安装）；仓库名沿用 Mini-Router 的公开名称。
+Task-aware **spec / react / flash** working-contract plugin for DeepSeek models
+inside Codex. It classifies each task, locks a mode per session, and injects
+the matching persona as developer context - via hooks on desktop and CLI, with
+the bundled skill as a self-checking fallback.
 
-## 它做什么
+Measured on a 6-task BigCodeBench subset (deepseek-v4-flash):
+**baseline 8/12 -> router (v0) 10/12 -> router (v4, current persona) 16/18**.
+Full methodology, per-task matrix, and honest limits:
+[docs/evidence.md](docs/evidence.md). Reproducible harness:
+[bench/](bench/README.md).
 
-在首轮模型请求前，从外部决定推理模式并注入匹配的 persona（模型不能自路由）：
-
-- `spec`（默认，Pro + 维护/修复类任务）：先读文件、复现失败、计划最小改动，再动手；
-- `react`（Pro + 新建/构建类任务）：直接产出可运行结果，再用检查验证；
-- `flash`（模型 slug 含 flash 自动启用）：weak persona + 分类/回顾/反跑题/深度思考/
-  决策闭环五锚。
-
-模式按会话锁定（`session-modes.json`），中途不翻转；每轮按任务复杂度注入「快收敛」
-或「决策闭环」引导。Codex 隐藏思维链，所以验证靠可见行为：回复次数、收尾摘要结构、
-工具调用节奏、以及审计日志 `~/.codex/deepseek-minimal-anchor-reports/hook-log.jsonl`
-（每次注入带 mode/source/complexity）。
-
-## 安装
+## Quick start
 
 ```sh
-git clone <repo-url>
+git clone https://github.com/hccccc01333/deepseek-mini-router
 cd deepseek-mini-router
 codex plugin marketplace add .
 codex plugin add deepseek-minimal-anchor@deepseek-mini-router
 ```
 
-依赖：本机 Node.js；Codex 已配置 DeepSeek provider（官方支持 Responses API 接入）。
-首次使用需审查并信任钩子。
+Then:
 
-环境变量：
+1. Trust the hooks once (app plugin settings, or `/hooks` in the CLI). Trust is
+   hash-keyed: after a plugin update, re-trust and start a new thread.
+2. Open a new thread with a DeepSeek model - the contract applies automatically.
+3. Ask *"Is the mini-router active?"* any time; the assistant answers from the
+   audit log (`~/.codex/deepseek-minimal-anchor-reports/hook-log.jsonl`).
 
-- `DEEPSEEK_MINIMAL_ANCHOR=always|never` —— 强制对所有模型注入 / 彻底禁用
-- `DEEPSEEK_MINIMAL_ANCHOR_MODE=auto|spec|react|flash` —— 路由模式
+Environment:
 
-## 开发
+- `DEEPSEEK_MINIMAL_ANCHOR=always|never` - force / disable
+- `DEEPSEEK_MINIMAL_ANCHOR_MODE=auto|spec|react|flash` - route manually
 
-```sh
-npm test          # node --test tests/v2/（路由分类、模式锁定、钩子行为）
-```
+## How it works
 
-覆盖文本（放在插件根目录，存在即覆盖默认值）：`anchor.txt`（spec persona）、
-`react.txt`、`flash.txt`、`maintenance.txt`（基础维护引导）、`deep.txt`（深度锚后缀）。
+| Mode | Trigger | Contract |
+| --- | --- | --- |
+| spec | Pro + maintenance/fix tasks | read first, reproduce the failure, plan the smallest change, then edit |
+| react | Pro + build/create tasks | produce the working result directly, then verify |
+| flash | auto for `deepseek-v4-flash` | decide & verify: decide task type in one step, end each reasoning block with a decision or an information need, run a concrete check after writing, retry once on failure |
 
-## 诚实的状态说明
+The mode is locked per session and never flipped mid-session. Per-turn guidance
+adapts to task complexity (decision-closure deep anchor for complex tasks).
+Every injection is written to the audit log; when hooks are not running, the
+skill carries the same contract and the assistant says which channel is active.
 
-- **机制已验证**：注入送达、模式分类、会话锁定、审计日志均通过单元/钩子测试与真实
-  CLI 会话冒烟。
-- **效果已有一轮实测（2026-08-15）**：BigCodeBench 6 任务子集 × 三臂（官方基线 /
-  强制 spec 静态锚定 / v2 路由），deepseek-v4-pro：
-
-  | 臂 | 通过率 |
-  | --- | --- |
-  | 官方基线 | 5/6 |
-  | 强制 spec 静态锚定 | 4/6 |
-  | v2 路由（auto） | 5/6 |
-  | Flash 基线（无插件） | 4/6 |
-  | Flash 路由（flash persona 五锚） | 5/6 |
-
-  解读：强制 spec 锚定在实现类任务上有真实拖累（736 从 pass 变 fail）；v2 路由对 Pro
-  持平基线（避免损伤）；**对 Flash 的正向增益经 n=2 复跑确认**——736 基线 fail×2、
-  路由 pass×2，Flash 路由两轮均 5/6、追平 Pro，Flash 基线两轮均 4/6。150 在所有臂全挂
-  （与 harness 侧历史结果一致，属模型难点）。本子集全部被路由进 react 侧，spec 侧
-  尚未在 Codex 里得到难基准验证。n=2/臂，Flash 侧结论已复现；Pro 臂与 spec 侧仍需
-  更多数据。
-- **Flash persona 变体筛选（2026-08-16）**：v1 复现优先 5/6、v2 规格转代码 4/6、
-  v3 防绕圈 3/6，均未超过 v0 五锚（10/12）——加料措辞反而有害；正式 flash persona
-  维持 v0。思考链内容可在会话 transcript 中读取（reasoning_text），质量分析见
-  实验台 analyze-thinking.mjs。
-- **第二轮变体（2026-08-16）**：v4 决策+验证 5/6、v5 验证优先 4/6、v6 I-need 风格
-  5/6（首次通过 150 但丢 736）——措辞换题不换分，“I need 比 let me 好”未获支持；
-  v0 维持正式 persona，v4/v6 待 n=2。
-- **n=2 复跑（2026-08-16）**：v4 合计 **11/12**（第二轮 6/6 含 150），首次超过 v0
-  （10/12）；v6 合计 10/12 且 150/736 两轮互换（“150 突破”是噪声）。推荐正式
-  flash persona 换为 v4（决策+验证）。
-- **v4 正式提升（2026-08-16）**：DEFAULT_FLASH 已改为 decide & verify 模式；
-  n=3 合计 16/18（150 2/3 vs v0 0/2，736 2/3），方向性好于 v0 但非碾压，转入
-  监控。
-
-## 授权
-
-MIT（LICENSE）。设计与人设文本参考 dsh-router-standard、dsh-anchored-standard 与
-modeltest（均 MIT，详见 NOTICE.md）。社区产物，与 DeepSeek、OpenAI 无隶属关系。
-
-## 效果证明（实测数据 + 可视化）
-
-所有数字来自本机 Codex + 官方 DeepSeek API 的实测，BigCodeBench v0.1.4
-（6 任务子集）本地评分；完整方法、逐题矩阵和诚实边界见
-[docs/evidence.md](docs/evidence.md)，可复现脚本在 [bench/](bench/README.md)。
+## Evidence
 
 ![Pass rate by arm](docs/pass-rate-by-arm.png)
 
@@ -96,10 +54,100 @@ modeltest（均 MIT，详见 NOTICE.md）。社区产物，与 DeepSeek、OpenAI
 
 ![Reasoning-style metrics by persona variant](docs/thinking-metrics.png)
 
-核心数字：
+Core numbers (BigCodeBench v0.1.4, 6-task subset, local scoring):
 
-- Flash 基线（无插件）8/12 → Flash 路由（v0 五锚）10/12 → Flash 路由
-  （v4 decide & verify，正式 persona）16/18；Pro 路由与基线持平（5/6），
-  强制 spec 静态锚定反而掉到 4/6。
-- 7 个 persona 变体筛选后，v4（决策+验证）是唯一超过 v0 的变体；措辞换题不换分
-  （“I need 比 let me 好”实测不成立）。
+| Arm | Pass rate |
+| --- | --- |
+| Flash baseline (no plugin, n=2) | 8/12 (67%) |
+| Flash router v0 five-anchor (n=2) | 10/12 (83%) |
+| Flash router v4 decide & verify (n=3) | **16/18 (89%)** |
+| Pro baseline (n=1) | 5/6 (83%) |
+| Pro static-spec forced (n=1) | 4/6 (67%) |
+| Pro router (n=1) | 5/6 (83%) |
+
+Seven persona variants were screened; v4 (decide & verify) is the only one that
+beat v0. Reasoning text is extracted from session transcripts
+(`reasoning_text`) and scored for decisions / verification / let-me / we.
+
+Honest limits: small samples (n=1-3), a single "implement from spec"
+benchmark (react side) - the spec/maintenance side is not yet measured in
+Codex; phrasing ("I need" vs "let me") changes which task fails, not the pass
+rate; third-party "beats Opus 4.8" claims are not endorsed by this project.
+
+## Development
+
+```sh
+cd plugins/deepseek-minimal-anchor
+npm test            # 14 unit + hook tests
+```
+
+Benchmark reproduction: see [bench/README.md](bench/README.md).
+Charts: `python bench/make-charts.py`.
+
+## License
+
+MIT ([LICENSE](LICENSE)). Design and persona wording reference
+dsh-router-standard, dsh-anchored-standard, and modeltest (MIT, see
+[NOTICE.md](plugins/deepseek-minimal-anchor/NOTICE.md)). Community project,
+not affiliated with DeepSeek or OpenAI.
+
+---
+
+# DeepSeek Mini-Router（中文说明）
+
+给 Codex 里的 DeepSeek 模型（deepseek-v4-pro / deepseek-v4-flash）注入「任务感知
+思维模式」的插件。按任务分类、会话内锁定模式，并通过钩子注入匹配的 persona；
+桌面应用钩子不可用时由内置技能兜底，会话会主动说明当前走哪条通道。
+
+## 快速开始
+
+```sh
+git clone https://github.com/hccccc01333/deepseek-mini-router
+cd deepseek-mini-router
+codex plugin marketplace add .
+codex plugin add deepseek-minimal-anchor@deepseek-mini-router
+```
+
+1. 信任钩子一次（应用插件设置或 CLI 的 `/hooks`）；信任按哈希绑定，插件更新后需
+   重新信任并开新线程。
+2. 新线程 + DeepSeek 模型，契约自动生效。
+3. 随时问「mini-router 生效了吗」，助手会读审计日志回答
+   （`~/.codex/deepseek-minimal-anchor-reports/hook-log.jsonl`）。
+
+环境变量：`DEEPSEEK_MINIMAL_ANCHOR=always|never`；`DEEPSEEK_MINIMAL_ANCHOR_MODE=auto|spec|react|flash`。
+
+## 模式
+
+- `spec`（Pro + 维护/修复）：先读文件、复现失败、计划最小改动，再动手；
+- `react`（Pro + 新建/构建）：直接产出可运行结果，再用检查验证；
+- `flash`（deepseek-v4-flash 自动启用）：决策+验证——一步定任务类型、每个推理块
+  以决策或信息需求收尾、写码后跑具体检查、失败重试一次。
+
+模式会话内锁定；每轮按复杂度注入引导；全部注入写审计日志。
+
+## 实测证据（可复现）
+
+三张图见英文版上方。核心数字（BigCodeBench v0.1.4，6 任务子集，本地评分）：
+
+| 臂 | 通过率 |
+| --- | --- |
+| Flash 基线（无插件，n=2） | 8/12（67%） |
+| Flash 路由 v0 五锚（n=2） | 10/12（83%） |
+| Flash 路由 v4 决策+验证（n=3） | **16/18（89%）** |
+| Pro 基线（n=1） | 5/6（83%） |
+| Pro 强制 spec（n=1） | 4/6（67%） |
+| Pro 路由（n=1） | 5/6（83%） |
+
+7 个 persona 变体筛选中，v4（决策+验证）是唯一超过 v0 的；思考链内容可从会话
+transcript 的 `reasoning_text` 提取并打分。
+
+诚实边界：样本小（n=1-3）、只测了「按规格实现」的 react 侧（spec 维护侧尚未在
+Codex 里测）；措辞（I need vs let me）只换失败题不换总分；本项目不背书「超过
+Opus 4.8」类第三方说法。完整方法见 [docs/evidence.md](docs/evidence.md)，
+跑批见 [bench/](bench/README.md)。
+
+## 开发 / 授权
+
+`npm test`（14 个单测+钩子测试）；图表 `python bench/make-charts.py`。MIT 许可，
+设计参考 dsh-router-standard、dsh-anchored-standard、modeltest（详见 NOTICE.md），
+与 DeepSeek、OpenAI 无隶属关系。
