@@ -1,11 +1,12 @@
 /**
  * Shared helpers for the DeepSeek minimal-anchor v2 hooks.
  *
- * v2 is a task-aware mini-router: it classifies the first task (spec / react),
- * locks the mode per session, injects the matching persona at session start
- * and on the first user prompt, then adapts per-turn guidance to complexity.
- * It follows the dsh-router-standard finding that persona is the dominant
- * trigger and that mode selection must come from outside the model.
+ * v2 is a mini-router with a Pro/Flash split: Pro sessions get the official
+ * Minimal one-sentence anchor only (`You are a helpful software engineer
+ * assistant.`); Flash sessions get the task-aware decide-and-verify router
+ * persona. Per-turn guidance is Flash-only. Env-forced spec/react modes remain
+ * as an experimental escape hatch. This follows dsh-anchored-standard (Pro is
+ * Minimal-conditioned) and dsh-router-standard (routing is Flash's lever).
  *
  * Hooks receive one JSON object on stdin and may print JSON on stdout. Only
  * SessionStart / UserPromptSubmit events consume
@@ -26,8 +27,8 @@ export const HOOK_LOG_FILE = join(REPORTS_DIR, 'hook-log.jsonl')
 // Built-in text blocks
 // ---------------------------------------------------------------------------
 
-export const DEFAULT_NEUTRAL = `You are a helpful software engineer assistant.
-Working contract for this session: diagnose and verify through tool calls, keep narration in internal reasoning, and finish with a short changed / verified / risks summary.`
+export const DEFAULT_PRO_MINIMAL = 'You are a helpful software engineer assistant.'
+export const DEFAULT_NEUTRAL = DEFAULT_PRO_MINIMAL
 
 export const DEFAULT_SPEC = `You are a helpful software engineer assistant.
 Working contract for this session (spec mode):
@@ -169,8 +170,8 @@ export function isComplex(text) {
 }
 
 /**
- * Resolve the locked mode for a session. env beats model routing beats
- * classifier; ties default to spec (the measured stable top band).
+ * Resolve the locked mode for a session. env beats model routing; Pro always
+ * anchors to the Minimal one-sentence contract, Flash gets the router persona.
  */
 export function resolveMode(input, text) {
   const forced = process.env.DEEPSEEK_MINIMAL_ANCHOR_MODE
@@ -179,14 +180,14 @@ export function resolveMode(input, text) {
   }
   const model = typeof input.model === 'string' ? input.model : ''
   if (/flash/i.test(model)) return { mode: 'flash', source: 'model' }
-  if (text.trim() === '') return { mode: 'spec', source: 'default' }
-  return { mode: classifyTask(text), source: 'classifier' }
+  return { mode: 'pro', source: 'model' }
 }
 
 export function personaFor(mode) {
   if (mode === 'react') return overrideText('react.txt', DEFAULT_REACT)
   if (mode === 'flash') return overrideText('flash.txt', DEFAULT_FLASH)
-  return overrideText('anchor.txt', DEFAULT_SPEC)
+  if (mode === 'spec') return overrideText('anchor.txt', DEFAULT_SPEC)
+  return overrideText('pro.txt', DEFAULT_PRO_MINIMAL)
 }
 
 export function maintenanceFor(complex) {

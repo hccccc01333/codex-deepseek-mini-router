@@ -7,10 +7,10 @@ persona，再按任务复杂度给每轮引导，并把每次注入写进审计�
 ## 为什么
 
 社区实验链（xiaobright/modeltest → dsh-anchored-standard → yjh051108/dsh-router-standard）
-发现 DeepSeek 模型对首轮可见的 persona 高度敏感，且行为不是连续变化，而是塌缩成几个
-稳定带：spec（计划-集体，修/维护任务的高分带）、mixed（陷阱，应回避）、react（执行者，
-新建/构建任务的高分带）。persona 是主导触发器；Flash 模型是阈值式行为，需要单独的弱
-persona：社区 w7 五锚（分类/回顾/反跑题/深度思考/决策闭环）是第一代（本仓库筛选编号
+社区实测分工：**Pro 的高分带在 Minimal 条件下**（Project2：standard 91 vs
+minimal 99/96），所以 Pro 只注入官方 Minimal 一句系统提示词
+（`You are a helpful software engineer assistant.`），不做任务分类也不追加引导。
+**Flash 是阈值式行为，路由才是它的杠杆**：社区 w7 五锚是第一代（本仓库筛选编号
 v0），当前出厂的是 v4「decide & verify」。模式选择必须来自外部（模型不能自路由），
 这正是本插件做的事。
 
@@ -20,13 +20,14 @@ v0），当前出厂的是 v4「decide & verify」。模式选择必须来自外
 
 ## 模式路由（v2）
 
-优先级：`DEEPSEEK_MINIMAL_ANCHOR_MODE` 环境变量 > 模型识别 > 任务分类器。
+优先级：`DEEPSEEK_MINIMAL_ANCHOR_MODE` 环境变量 > 模型识别（Pro → 极简一句，
+Flash → decide & verify 路由）。
 
 | 模式 | 谁触发 | persona 行为 |
 | --- | --- | --- |
-| spec | Pro + 维护/修复/计划类任务（默认） | 先读文件、复现失败、计划最小改动，再动手 |
-| react | Pro + 新建/构建/跑代码类任务 | 直接产出可运行结果，再用检查验证 |
+| pro | 模型 slug 含 pro（默认） | 极简锚定：只注入官方 Minimal 一句，不再追加引导 |
 | flash | 模型 slug 含 flash | v4 decide & verify：一步定类型；每个推理块以决策或信息需求收尾；写后跑具体检查；失败重试一次 |
+| spec / react | 仅环境变量强制（实验） | 保留旧分类 persona，用于对照实验 |
 
 任务分类器按关键词计分（spec 词 vs react 词），平局默认 spec；消息超过 800 字符或含
 架构关键词（architecture / module / 集成 / 分布式 等）时，每轮引导追加「决策闭环」深

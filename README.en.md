@@ -3,15 +3,15 @@
 [中文](README.md) | **English**
 
 A Codex plugin that fixes weak default reasoning for **DeepSeek models**
-(`deepseek-v4-pro` / `deepseek-v4-flash`). It classifies each task, locks a
-working mode per session, and injects the matching persona as developer
-context - via hooks on desktop and CLI, with the bundled skill as a
-self-checking fallback.
+(`deepseek-v4-pro` / `deepseek-v4-flash`). Pro sessions receive only the
+official Minimal one-sentence system prompt; Flash sessions get a task-aware
+decide-and-verify router persona. Delivery is via hooks on desktop and CLI,
+with the bundled skill as a self-checking fallback.
 
 **Who this is for**: anyone running DeepSeek inside Codex (desktop or CLI,
-official Responses API) who wants Pro to plan-before-fix on maintenance tasks,
-build-first on creation tasks, and Flash to decide-and-verify instead of
-rambling.
+official Responses API) who wants Pro to stay on the Minimal one-sentence
+anchor (the community-measured high-score condition) and Flash to
+decide-and-verify instead of rambling.
 
 Measured on a 6-task BigCodeBench subset (`deepseek-v4-flash`):
 **baseline 8/12 -> router v0 10/12 -> router v4 "decide & verify" 16/18**.
@@ -45,12 +45,14 @@ Environment:
 
 | Mode | Trigger | Contract |
 | --- | --- | --- |
-| spec | Pro + maintenance/fix tasks | read first, reproduce the failure, plan the smallest change, then edit |
-| react | Pro + build/create tasks | produce the working result directly, then verify |
+| pro | `deepseek-v4-pro` (auto) | **Minimal anchor**: inject exactly the official Minimal sentence `You are a helpful software engineer assistant.` and nothing else |
 | flash | `deepseek-v4-flash` (auto) | **decide & verify**: decide task type in one step, end every reasoning block with a decision or an information need, run a concrete check after writing, retry once on failure |
+| spec / react | env-forced only (experimental) | legacy classification personas kept for A/B control |
 
-The mode is locked per session and never flipped mid-session. Per-turn guidance
-adapts to task complexity (decision-closure deep anchor for complex tasks).
+The mode is locked per session and never flipped mid-session. Flash gets
+per-turn guidance that adapts to task complexity (decision-closure deep anchor
+for complex tasks); Pro stays on the one-sentence anchor with no further
+injections.
 Delivery is dual-channel: hooks are the main channel (desktop + CLI) and inject
 the contract as developer context; the bundled skill is the fallback and tells
 you which channel is active. After context compaction the contract is
@@ -103,6 +105,10 @@ Core numbers (BigCodeBench v0.1.4, 6-task subset, local scoring):
 Seven persona variants were screened; v4 (decide & verify) is the only one that
 beat v0. Reasoning text is extracted from session transcripts
 (`reasoning_text`) and scored for decisions / verification / let-me / we.
+
+> Pro now defaults to the Minimal one-sentence anchor (routing is no longer
+> applied to Pro); the Pro static/router rows above are historical controls -
+> routing never beat baseline for Pro, so Pro keeps only the Minimal condition.
 
 Honest limits: small samples (n=1-3), a single "implement from spec" benchmark
 (react side) - the spec/maintenance side is not yet measured in Codex; phrasing

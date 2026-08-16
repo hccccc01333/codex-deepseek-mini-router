@@ -37,22 +37,25 @@ test('resolveMode: env force beats model', () => {
   else process.env.DEEPSEEK_MINIMAL_ANCHOR_MODE = prev
 })
 
-test('resolveMode: flash model and classifier', () => {
+test('resolveMode: flash router / pro minimal', () => {
   assert.deepEqual(resolveMode({ model: 'deepseek-v4-flash' }, SPEC_MSG), { mode: 'flash', source: 'model' })
-  assert.deepEqual(resolveMode({ model: 'deepseek-v4-pro' }, REACT_MSG), { mode: 'react', source: 'classifier' })
-  assert.deepEqual(resolveMode({ model: 'deepseek-v4-pro' }, SPEC_MSG), { mode: 'spec', source: 'classifier' })
-  assert.deepEqual(resolveMode({ model: 'deepseek-v4-pro' }, ''), { mode: 'spec', source: 'default' })
+  assert.deepEqual(resolveMode({ model: 'deepseek-v4-pro' }, REACT_MSG), { mode: 'pro', source: 'model' })
+  assert.deepEqual(resolveMode({ model: 'deepseek-v4-pro' }, SPEC_MSG), { mode: 'pro', source: 'model' })
+  assert.deepEqual(resolveMode({ model: 'deepseek-v4-pro' }, ''), { mode: 'pro', source: 'model' })
 })
 
 test('personaFor: distinct modes with markers', () => {
+  const pro = personaFor('pro')
   const spec = personaFor('spec')
   const react = personaFor('react')
   const flash = personaFor('flash')
+  assert.equal(pro, 'You are a helpful software engineer assistant.')
+  assert.ok(!pro.includes('spec mode'))
   assert.ok(spec.includes('spec mode'))
   assert.ok(react.includes('react mode'))
   assert.ok(flash.includes('flash mode'))
   assert.ok(!spec.includes('react mode'))
-  assert.ok(spec.length <= 2500 && react.length <= 2500 && flash.length <= 2500)
+  assert.ok(pro.length <= 2500 && spec.length <= 2500 && react.length <= 2500 && flash.length <= 2500)
 })
 
 test('maintenanceFor: simple vs complex', () => {

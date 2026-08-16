@@ -1,7 +1,7 @@
 {
   "name": "deepseek-minimal-anchor",
-  "version": "0.3.1",
-  "description": "Task-aware mini-router for DeepSeek models in Codex: classifies spec/react mode, injects the matching persona at session start, adapts per-turn guidance to task complexity, and reports a trajectory fingerprint.",
+  "version": "0.4.0",
+  "description": "DeepSeek Mini-Router for Codex: Pro sessions get the official Minimal one-sentence anchor; Flash sessions get the decide-and-verify router persona, Flash-only per-turn guidance, and a trajectory fingerprint.",
   "homepage": "https://github.com/hccccc01333/codex-deepseek-mini-router",
   "repository": "https://github.com/hccccc01333/codex-deepseek-mini-router",
   "author": {
@@ -32,7 +32,7 @@
       "Skills",
       "Hooks"
     ],
-    "longDescription": "DeepSeek models are highly sensitive to the agent scaffold and to the first-visible persona. This plugin classifies each task (spec: plan-and-fix, react: build-and-verify), locks the mode per session, injects the matching persona at session start, and adapts per-turn guidance to task complexity. DeepSeek Flash models get a separate weak-mode persona with recall/anti-runaway/decision-closure anchors. Delivery: hooks inject the contract as developer context on desktop and CLI once trusted (trust is hash-keyed - re-trust after updates); the bundled skill is a self-executing fallback that carries the same contract when hooks are not running. Codex hides reasoning, so verification uses visible behavior: reply count, final-summary shape, tool-call pace, an audit log of every injection, and opportunistic let-me/we counts when a gateway passes reasoning through.",
+    "longDescription": "DeepSeek models are highly sensitive to the agent scaffold and the first-visible persona. Following the community findings (dsh-anchored-standard, dsh-router-standard), Pro sessions get exactly the official Minimal system prompt - 'You are a helpful software engineer assistant.' - and nothing else. Flash sessions get a task-aware decide-and-verify router persona: decide the task type in one step, end each reasoning block with a decision, run a concrete check after writing, retry once on failure. Delivery: hooks inject the contract as developer context on desktop and CLI once trusted (trust is hash-keyed - re-trust after updates); the bundled skill is a self-executing fallback. Codex hides reasoning, so verification uses visible behavior: reply count, final-summary shape, tool-call pace, an audit log of every injection, and opportunistic let-me/we counts when a gateway passes reasoning through.",
     "developerName": "Hzz",
     "category": "Productivity",
     "defaultPrompt": [

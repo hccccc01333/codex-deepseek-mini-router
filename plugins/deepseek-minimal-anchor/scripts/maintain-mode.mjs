@@ -1,7 +1,8 @@
 /**
  * UserPromptSubmit hook: inject the persona on the first prompt (when the
  * SessionStart payload had no message), then per-turn guidance afterwards.
- * Guidance adapts to task complexity via the decision-closure deep suffix.
+ * Guidance is Flash-only: Pro sessions stay on the one-sentence Minimal
+ * anchor and get no further injections.
  */
 import {
   emitContext, getModeState, isComplex, isEnabled, logInjection, maintenanceFor,
@@ -16,6 +17,7 @@ const state = getModeState(input.session_id)
 const complexity = isComplex(message) ? 'complex' : 'simple'
 
 if (state?.personaDelivered) {
+  if (state.mode === 'pro') process.exit(0)
   const text = maintenanceFor(complexity)
   emitContext('UserPromptSubmit', text)
   logInjection(input, 'UserPromptSubmit', text, {

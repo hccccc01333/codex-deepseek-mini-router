@@ -12,28 +12,25 @@ skill is inert.
 
 ## Mode selection (first user message)
 
-Pick one mode from the first task description and lock it for the session;
-do not flip mid-session:
+Pick one mode from the model and lock it for the session; do not flip
+mid-session:
 
-- `spec` - maintenance / fix / plan tasks (`fix`, `bug`, `repair`, `refactor`,
-  `migrate`, `review`, `test`, `调试`, `修复`, `迁移`, `优化`...): read the
-  essential files first, reproduce the failure, plan the smallest change, then
-  edit.
-- `react` - build / create / implement tasks (`build`, `create`, `implement`,
-  `write`, `generate`, `simulate`, `新建`, `开发`, `生成`, `仿真`...): produce
-  the working result directly, then verify it.
-- `flash` - always for `deepseek-v4-flash`: decide & verify mode - decide the
-  task type (build or fix) in one step, keep reasoning concise, end each
-  reasoning block with a decision or an information need, run a concrete check
-  after writing code, and retry once on failure (no environment checks).
-- Tie or unclear: default to `spec`.
+- `pro` - always for `deepseek-v4-pro`: **Minimal anchor**. The injected
+  contract is exactly the official Minimal system prompt: `You are a helpful
+  software engineer assistant.` Keep it to that one sentence; Pro gets no
+  per-turn guidance.
+- `flash` - always for `deepseek-v4-flash`: **decide & verify router** -
+  decide the task type (build or fix) in one step, keep reasoning concise, end
+  each reasoning block with a decision or an information need, run a concrete
+  check after writing code, and retry once on failure (no environment checks).
+- Env-forced `spec` / `react` modes remain experimental escape hatches
+  (`DEEPSEEK_MINIMAL_ANCHOR_MODE`), not the default Pro path.
 
 ## Working contract
 
 - Keep diagnosis and progress in internal reasoning. Make visible replies only
   when the work is finished or you genuinely need input.
-- `spec`: read and reproduce before changing; plan the smallest change.
-- `react`: build the result first, verify second.
+- `pro`: stay on the one-sentence Minimal anchor; do not add extra contracts.
 - `flash`: decide the task type (build or fix) in one step and act; keep
   reasoning concise and end each reasoning block with a decision or an
   information need; after writing code run a concrete check; if it fails, read

@@ -3,12 +3,13 @@
 [English](README.en.md) | **中文（默认）**
 
 给 Codex 里的 DeepSeek 模型（`deepseek-v4-pro` / `deepseek-v4-flash`）注入
-「任务感知工作契约」的插件：按任务分类、会话内锁定模式，并通过钩子注入匹配
-的 persona；桌面应用钩子不可用时由内置技能兜底，会话会主动说明当前走哪条通道。
+「Pro 极简锚定 + Flash 任务感知路由」的插件：Pro 只注入官方 Minimal 的一句
+系统提示词，Flash 按任务锁定 decide & verify 路由 persona；桌面应用钩子不可用
+时由内置技能兜底，会话会主动说明当前走哪条通道。
 
 **适用对象**：在 Codex（桌面或 CLI，官方 Responses API）里使用 DeepSeek 的人；
-希望 Pro 在维护任务上先读后改、在新建任务上先产出再验证，希望 Flash 稳定
-「决策 + 验证」而不是长篇自说自话。
+希望 Pro 保持官方 Minimal 一句的极简锚定（社区实测的高分条件），希望 Flash
+稳定「决策 + 验证」而不是长篇自说自话。
 
 在 6 任务 BigCodeBench 子集（`deepseek-v4-flash`）上的实测：
 **基线 8/12 → 路由 v0 10/12 → 路由 v4「decide & verify」16/18**。
@@ -41,12 +42,13 @@ codex plugin add deepseek-minimal-anchor@codex-deepseek-mini-router
 
 | 模式 | 谁触发 | 契约 |
 | --- | --- | --- |
-| spec | Pro + 维护/修复任务 | 先读文件、复现失败、计划最小改动，再动手 |
-| react | Pro + 新建/构建任务 | 直接产出可运行结果，再用检查验证 |
+| pro | `deepseek-v4-pro`（自动） | **极简锚定**：只注入官方 Minimal 一句 `You are a helpful software engineer assistant.`，不再追加任何引导 |
 | flash | `deepseek-v4-flash`（自动） | **决策 + 验证**：一步定任务类型、每个推理块以决策或信息需求收尾、写码后跑具体检查、失败重试一次 |
+| spec / react | 仅环境变量强制（实验） | 保留旧分类 persona，仅作对照 |
 
-模式会话内锁定，绝不中途翻转；每轮按任务复杂度注入引导（复杂任务附加
-「决策闭环」深锚）。双通道交付：**钩子**是主通道（桌面 + CLI），把契约作为
+模式会话内锁定，绝不中途翻转；Flash 每轮按任务复杂度注入引导（复杂任务附加
+「决策闭环」深锚），Pro 保持一句极简、不再追加。双通道交付：**钩子**是主通道
+（桌面 + CLI），把契约作为
 developer 上下文注入；**技能**是兜底通道，携带同一份契约并主动说明当前走哪条
 通道。上下文压缩（compact）后会自动重新锚定契约，防止 persona 中途退化。
 每次注入都写入审计日志。
@@ -93,6 +95,9 @@ README 里有两个容易混淆的编号：
 
 7 个 persona 变体筛选中，v4（决策 + 验证）是唯一超过 v0 的；思考链内容可从会话
 transcript 的 `reasoning_text` 提取并打分。
+
+> Pro 现在默认走极简一句锚定（路由不再用于 Pro）；上表中的 Pro static/router
+> 是历史对照：路由对 Pro 没有带来超过基线的提升，所以 Pro 只保留 Minimal 条件。
 
 诚实边界：样本小（n=1–3）、只测了「按规格实现」的 react 侧（spec 维护侧尚未
 在 Codex 里测）；措辞（I need vs let me）只换失败题不换总分；本项目不背书
