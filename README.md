@@ -69,6 +69,9 @@ npm test          # node --test tests/v2/（路由分类、模式锁定、钩子
   v3 防绕圈 3/6，均未超过 v0 五锚（10/12）——加料措辞反而有害；正式 flash persona
   维持 v0。思考链内容可在会话 transcript 中读取（reasoning_text），质量分析见
   实验台 analyze-thinking.mjs。
+- **第二轮变体（2026-08-16）**：v4 决策+验证 5/6、v5 验证优先 4/6、v6 I-need 风格
+  5/6（首次通过 150 但丢 736）——措辞换题不换分，“I need 比 let me 好”未获支持；
+  v0 维持正式 persona，v4/v6 待 n=2。
 
 ## 授权
 
