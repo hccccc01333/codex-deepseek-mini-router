@@ -1,0 +1,46 @@
+{
+  "name": "deepseek-minimal-anchor",
+  "version": "0.2.0",
+  "description": "Task-aware spec/react/flash working-contract plugin for DeepSeek models in Codex: classifies each task, locks a mode per session, injects the matching persona via trusted hooks, and audits every injection.",
+  "homepage": "https://github.com/hccccc01333/codex-deepseek-mini-router",
+  "repository": "https://github.com/hccccc01333/codex-deepseek-mini-router",
+  "author": {
+    "name": "Hzz"
+  },
+  "license": "MIT",
+  "keywords": [
+    "deepseek",
+    "codex",
+    "router",
+    "persona",
+    "hooks"
+  ],
+  "skills": "./plugins/deepseek-minimal-anchor/skills/",
+  "hooks": "./plugins/deepseek-minimal-anchor/hooks/hooks.json",
+  "interface": {
+    "displayName": "DeepSeek Mini-Router",
+    "shortDescription": "Task-aware spec/react/flash working contract for DeepSeek models in Codex.",
+    "longDescription": "DeepSeek models are highly sensitive to the agent scaffold and the first-visible persona. This plugin classifies each task (spec: plan-and-fix, react: build-and-verify), locks the mode per session, and injects the matching persona at session start. DeepSeek Flash gets a separate decide-and-verify contract. Hooks inject the contract as developer context on desktop and CLI once trusted (trust is hash-keyed); the bundled skill is a self-executing fallback.",
+    "developerName": "Hzz",
+    "category": "Productivity",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/icon.svg",
+    "websiteURL": "https://github.com/hccccc01333/codex-deepseek-mini-router",
+    "privacyPolicyURL": "https://github.com/hccccc01333/codex-deepseek-mini-router/blob/main/docs/privacy.md",
+    "termsOfServiceURL": "https://github.com/hccccc01333/codex-deepseek-mini-router/blob/main/docs/terms.md",
+    "screenshots": [
+      "./docs/pass-rate-by-arm.png",
+      "./docs/per-task-heatmap.png",
+      "./docs/thinking-metrics.png"
+    ],
+    "capabilities": [
+      "Skills",
+      "Hooks"
+    ],
+    "defaultPrompt": [
+      "Work in DeepSeek mini-router mode.",
+      "Show the trajectory fingerprint for this session.",
+      "Enable the DeepSeek mini-router (trust its hooks) and confirm it is active."
+    ]
+  }
+}
